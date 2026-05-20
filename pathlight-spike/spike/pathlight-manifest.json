@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "id": "S1-US002-UNHAPPY-001",
+  "projectKey": "ZOVKU",
+  "stage": "S1",
+  "module": "Waitlist Form",
+  "storyId": "ZOVKU-42",
+  "storyTitle": "Waitlist form captures interest",
+  "branchType": "unhappy",
+  "label": "Duplicate email returns 409",
+  "risk": "medium",
+  "businessRules": [
+    "Duplicate emails must not be inserted into the waitlist database"
+  ],
+  "testFiles": ["e2e/waitlist.spec.ts"],
+  "tags": ["waitlist", "validation", "unhappy"]
+}

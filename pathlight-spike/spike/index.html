@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pathlight · ZovKu S1 · Spike Demo</title>
+  <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  background: #F1EFE8;
+  color: #2C2C2A;
+  padding: 24px;
+}
+.wrap { max-width: 760px; margin: 0 auto; }
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.logo {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2B6CB0;
+  letter-spacing: .06em;
+}
+.project {
+  font-size: 13px;
+  color: #888780;
+}
+.conn-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #B4B2A9;
+  margin-left: auto;
+}
+.conn-dot.connected    { background: #1D9E75; }
+.conn-dot.disconnected { background: #E24B4A; }
+.conn-label {
+  font-size: 11px;
+  color: #888780;
+}
+
+/* Status bar */
+.status-bar {
+  font-size: 13px;
+  color: #4A5568;
+  padding: 8px 14px;
+  background: #fff;
+  border: 0.5px solid rgba(44,44,42,.12);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+/* Fishbone wrapper */
+.fishbone-wrap {
+  background: #fff;
+  border: 0.5px solid rgba(44,44,42,.12);
+  border-radius: 12px;
+  padding: 8px;
+  overflow-x: auto;
+}
+
+/* SVG branch state animations */
+@keyframes tc-pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(2); }
+}
+@keyframes bone-flow {
+  to { stroke-dashoffset: -12; }
+}
+
+.tc-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: fill 0.3s ease;
+}
+
+.tc-pending .tc-dot  { fill: #B4B2A9; }
+.tc-active  .tc-dot  {
+  fill: #EF9F27;
+  animation: tc-pulse 0.65s ease-in-out infinite;
+}
+.tc-pass    .tc-dot  { fill: #1D9E75; }
+.tc-fail    .tc-dot  { fill: #E24B4A; }
+
+.tc-branch { transition: stroke 0.3s; }
+.tc-pending .tc-branch { stroke: #D3D1C7; }
+.tc-active  .tc-branch { stroke: #EF9F27; }
+.tc-pass    .tc-branch { stroke: #5DCAA5; }
+.tc-fail    .tc-branch { stroke: #F09595; }
+
+.tc-lbl { transition: fill 0.3s; }
+.tc-pending .tc-lbl { fill: #888780; }
+.tc-active  .tc-lbl { fill: #BA7517; }
+.tc-pass    .tc-lbl { fill: #0F6E56; }
+.tc-fail    .tc-lbl { fill: #993556; }
+
+.bone-line { transition: stroke 0.4s, stroke-width 0.4s; }
+.bone-running {
+  stroke: #EF9F27 !important;
+  stroke-width: 2.5 !important;
+  stroke-dasharray: 8 4;
+  animation: bone-flow 0.38s linear infinite;
+}
+.bone-pass { stroke: #1D9E75 !important; stroke-width: 2 !important; }
+.bone-fail { stroke: #E24B4A !important; stroke-width: 2 !important; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- Header bar -->
+    <div class="header">
+      <span class="logo">PATHLIGHT</span>
+      <span class="project">ZovKu S1 · Spike Demo</span>
+      <span class="conn-dot" id="conn-dot"></span>
+      <span class="conn-label" id="conn-label">Connecting...</span>
+    </div>
+
+    <!-- Status bar -->
+    <div class="status-bar" id="status-bar">
+      Waiting for run to start...
+    </div>
+
+    <!-- Fishbone SVG -->
+    <div class="fishbone-wrap">
+      <svg id="fishbone" width="700" height="300"
+           viewBox="0 0 700 300"
+           xmlns="http://www.w3.org/2000/svg">
+        <!-- rendered by JavaScript below -->
+      </svg>
+    </div>
+
+    <!-- Report link — hidden until report.ready event -->
+    <div id="report-area" style="display:none; margin-top:12px;">
+      <a id="report-link" href="#" target="_blank"
+         style="font-size:13px; font-weight:500; color:#2B6CB0;
+                text-decoration:none; padding:8px 16px;
+                background:#E6F1FB; border-radius:8px;
+                border:0.5px solid #378ADD;">
+        View Report →
+      </a>
+    </div>
+
+  </div>
+  <script>
+var NS = 'http://www.w3.org/2000/svg';
+var MANIFEST_NODE_ID = 'S1-US002-UNHAPPY-001';
+
+// ── Build the fishbone SVG ────────────────────────────────────────────
+
+function mkEl(tag, attrs, text) {
+  var el = document.createElementNS(NS, tag);
+  Object.keys(attrs).forEach(function(k) {
+    el.setAttribute(k, attrs[k]);
+  });
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+
+function buildFishbone() {
+  var svg = document.getElementById('fishbone');
+
+  // Arrow marker
+  var defs = mkEl('defs', {});
+  defs.innerHTML =
+    '<marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" ' +
+    'markerWidth="7" markerHeight="7" orient="auto-start-reverse">' +
+    '<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" ' +
+    'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '</marker>';
+  svg.appendChild(defs);
+
+  // Spine
+  svg.appendChild(mkEl('line', {
+    x1: 40, y1: 150, x2: 560, y2: 150,
+    stroke: '#5F5E5A', 'stroke-width': 2,
+    'marker-end': 'url(#ah)'
+  }));
+
+  // Fish tail
+  svg.appendChild(mkEl('polygon', {
+    points: '40,150 58,140 58,160',
+    fill: '#888780', opacity: 0.35
+  }));
+
+  // Quality Gate box
+  svg.appendChild(mkEl('rect', {
+    x: 565, y: 124, width: 126, height: 52, rx: 8,
+    fill: '#E6F1FB', stroke: '#378ADD', 'stroke-width': 0.5
+  }));
+  svg.appendChild(mkEl('text', {
+    x: 628, y: 145, 'text-anchor': 'middle',
+    'font-size': 10, 'font-weight': 600,
+    fill: '#185FA5', 'font-family': 'system-ui, sans-serif'
+  }, 'Quality Gate'));
+  svg.appendChild(mkEl('text', {
+    x: 628, y: 162, 'text-anchor': 'middle',
+    'font-size': 9, fill: '#378ADD',
+    'font-family': 'system-ui, sans-serif'
+  }, 'S1 \u25b8 Waitlist'));
+
+  // Module bone — goes from spine at x=250 y=150 to tip at x=158 y=58
+  // Bone length ~130px at 45 degrees
+  svg.appendChild(mkEl('line', {
+    id: 'bone-S1-US002',
+    'class': 'bone-line',
+    x1: 250, y1: 150, x2: 158, y2: 58,
+    stroke: '#B4B2A9', 'stroke-width': 1.5
+  }));
+
+  // Module labels at tip
+  svg.appendChild(mkEl('text', {
+    x: 158, y: 40, 'text-anchor': 'middle',
+    'font-size': 10, 'font-weight': 600,
+    fill: '#5F5E5A', 'font-family': 'system-ui, sans-serif'
+  }, 'US-002'));
+  svg.appendChild(mkEl('text', {
+    x: 158, y: 52, 'text-anchor': 'middle',
+    'font-size': 9, fill: '#888780',
+    'font-family': 'system-ui, sans-serif'
+  }, 'Waitlist Form'));
+
+  // Branch — at t=0.5 along the bone
+  // px = 250 + 0.5*(158-250) = 204
+  // py = 150 + 0.5*(58-150)  = 104
+  var px = 204, py = 104;
+
+  var g = mkEl('g', {
+    id: 'tc-' + MANIFEST_NODE_ID,
+    'class': 'tc-pending'
+  });
+
+  // Horizontal stub
+  g.appendChild(mkEl('line', {
+    'class': 'tc-branch',
+    x1: px, y1: py, x2: px + 35, y2: py,
+    'stroke-width': 0.8
+  }));
+
+  // Dot
+  g.appendChild(mkEl('circle', {
+    'class': 'tc-dot',
+    cx: px + 39, cy: py, r: 5
+  }));
+
+  // Label
+  var lbl = mkEl('text', {
+    'class': 'tc-lbl',
+    x: px + 47, y: py + 4,
+    'font-size': 10, 'text-anchor': 'start',
+    'font-family': 'system-ui, sans-serif'
+  });
+  lbl.textContent = 'Duplicate email \u2192 409';
+  g.appendChild(lbl);
+
+  svg.appendChild(g);
+
+  // Legend
+  var legend = [
+    { c: '#B4B2A9', t: 'Pending' },
+    { c: '#EF9F27', t: 'Running' },
+    { c: '#1D9E75', t: 'Passed'  },
+    { c: '#E24B4A', t: 'Failed'  }
+  ];
+  var lx = 20;
+  legend.forEach(function(item) {
+    svg.appendChild(mkEl('circle', { cx: lx + 5, cy: 280, r: 4.5, fill: item.c }));
+    svg.appendChild(mkEl('text', {
+      x: lx + 14, y: 284,
+      'font-size': 9, fill: '#888780',
+      'font-family': 'system-ui, sans-serif'
+    }, item.t));
+    lx += 72;
+  });
+}
+
+// ── Status helpers ────────────────────────────────────────────────────
+
+function setStatus(msg, color) {
+  var bar = document.getElementById('status-bar');
+  bar.textContent = msg;
+  bar.style.color = color || '#4A5568';
+}
+
+function setConn(connected) {
+  var dot   = document.getElementById('conn-dot');
+  var label = document.getElementById('conn-label');
+  if (connected) {
+    dot.className   = 'conn-dot connected';
+    label.textContent = 'Connected';
+  } else {
+    dot.className   = 'conn-dot disconnected';
+    label.textContent = 'Reconnecting...';
+  }
+}
+
+// ── Event handler ─────────────────────────────────────────────────────
+
+function handleEvent(event) {
+  var branch = document.getElementById('tc-' + MANIFEST_NODE_ID);
+  var bone   = document.getElementById('bone-S1-US002');
+
+  switch (event.type) {
+
+    case 'run.started':
+      setStatus('Run started — waiting for test...', '#2B6CB0');
+      break;
+
+    case 'test.started':
+      if (event.payload && event.payload.testId === MANIFEST_NODE_ID) {
+        if (branch) branch.setAttribute('class', 'tc-active');
+        if (bone) {
+          bone.classList.remove('bone-pass', 'bone-fail');
+          bone.classList.add('bone-running');
+        }
+        setStatus('Running: ' + MANIFEST_NODE_ID, '#BA7517');
+      }
+      break;
+
+    case 'test.passed':
+      if (event.payload && event.payload.testId === MANIFEST_NODE_ID) {
+        if (branch) branch.setAttribute('class', 'tc-pass');
+        if (bone) {
+          bone.classList.remove('bone-running');
+          bone.classList.add('bone-pass');
+        }
+        setStatus(
+          'Passed: ' + MANIFEST_NODE_ID +
+          ' (' + event.payload.duration + 'ms)',
+          '#1D9E75'
+        );
+      }
+      break;
+
+    case 'test.failed':
+      if (event.payload && event.payload.testId === MANIFEST_NODE_ID) {
+        if (branch) branch.setAttribute('class', 'tc-fail');
+        if (bone) {
+          bone.classList.remove('bone-running');
+          bone.classList.add('bone-fail');
+        }
+        setStatus('FAILED: ' + event.payload.error, '#E24B4A');
+      }
+      break;
+
+    case 'run.finished':
+      var p = event.payload;
+      setStatus(
+        'Run complete \u2014 ' + p.passed + '/' + p.total +
+        ' passed in ' + p.duration + 'ms',
+        p.failed > 0 ? '#E24B4A' : '#1D9E75'
+      );
+      break;
+
+    case 'report.ready':
+      var area = document.getElementById('report-area');
+      var link = document.getElementById('report-link');
+      if (area) area.style.display = 'block';
+      if (link) link.href = event.payload.path;
+      break;
+  }
+}
+
+// ── SSE connection ────────────────────────────────────────────────────
+
+function connect() {
+  var es = new EventSource('/api/stream');
+
+  es.onopen = function() {
+    setConn(true);
+    setStatus('Connected \u2014 waiting for run to start...', '#888780');
+  };
+
+  es.onmessage = function(e) {
+    try {
+      var event = JSON.parse(e.data);
+      handleEvent(event);
+    } catch (err) {
+      console.error('[pathlight] Failed to parse event:', e.data);
+    }
+  };
+
+  es.onerror = function() {
+    setConn(false);
+    // EventSource reconnects automatically — no manual retry needed
+  };
+}
+
+// ── Restore state on page load ────────────────────────────────────────
+// Handles the case where the user refreshes mid-run
+
+function restoreState() {
+  fetch('/api/run')
+    .then(function(res) { return res.json(); })
+    .then(function(run) {
+      var result = run.testResults[MANIFEST_NODE_ID];
+      if (!result) return;
+      var branch = document.getElementById('tc-' + MANIFEST_NODE_ID);
+      var bone   = document.getElementById('bone-S1-US002');
+      if (result.status === 'passed') {
+        if (branch) branch.setAttribute('class', 'tc-pass');
+        if (bone)   bone.classList.add('bone-pass');
+      } else if (result.status === 'failed') {
+        if (branch) branch.setAttribute('class', 'tc-fail');
+        if (bone)   bone.classList.add('bone-fail');
+      } else if (result.status === 'running') {
+        if (branch) branch.setAttribute('class', 'tc-active');
+        if (bone)   bone.classList.add('bone-running');
+      }
+    })
+    .catch(function() {
+      // Server not ready yet on first load — normal
+    });
+}
+
+// ── Initialise ────────────────────────────────────────────────────────
+
+window.addEventListener('load', function() {
+  buildFishbone();
+  restoreState();
+  connect();
+});
+  </script>
+</body>
+</html>

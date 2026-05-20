@@ -1,0 +1,16 @@
+{
+  "name": "pathlight-spike",
+  "version": "0.0.1",
+  "description": "Pathlight first demo slice — throwaway spike",
+  "scripts": {
+    "server": "node spike/server.js",
+    "mock": "node mock/mock-server.js",
+    "test": "npx playwright test e2e/waitlist.spec.ts"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0"
+  }
+}
