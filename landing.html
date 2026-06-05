@@ -1,0 +1,1756 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pathlight — Test Intelligence Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --canvas: #ffffff;
+        --ghost: #f2f2f2;
+        --ash: #e5e5e5;
+        --mid: #737373;
+        --rich: #0a0a0a;
+        --deep: #000000;
+        --red: #c22b10;
+        --green: #10c22b;
+        --font: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
+        --mono: "Geist Mono", ui-monospace, monospace;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: var(--font);
+        background: var(--canvas);
+        color: var(--rich);
+        font-size: 16px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Navigation ─────────────────────────────────────────────────────────── */
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--ash);
+        padding: 0 56px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .logo {
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        color: var(--deep);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .logo-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--deep);
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .nl {
+        font-size: 14px;
+        color: var(--mid);
+        text-decoration: none;
+        padding: 7px 14px;
+        border-radius: 10px;
+        transition:
+          color 0.15s,
+          background 0.15s;
+      }
+      .nl:hover {
+        color: var(--rich);
+        background: var(--ghost);
+      }
+      .nav-btn {
+        font-family: var(--font);
+        font-size: 14px;
+        font-weight: 500;
+        background: var(--deep);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 9px 20px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: opacity 0.15s;
+      }
+      .nav-btn:hover {
+        opacity: 0.82;
+      }
+
+      /* ── Hero ────────────────────────────────────────────────────────────────── */
+      .hero {
+        padding: 112px 56px 88px;
+        text-align: center;
+        max-width: 980px;
+        margin: 0 auto;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--ghost);
+        border: 1px solid var(--ash);
+        border-radius: 26px;
+        padding: 5px 16px;
+        font-size: 13px;
+        color: var(--mid);
+        margin-bottom: 40px;
+        font-family: var(--mono);
+      }
+      .eyebrow-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+      h1 {
+        font-size: 64px;
+        font-weight: 600;
+        line-height: 1.04;
+        letter-spacing: -3.2px;
+        color: var(--deep);
+        margin-bottom: 28px;
+      }
+      h1 span {
+        color: var(--mid);
+      }
+      .hero-sub {
+        font-size: 19px;
+        line-height: 1.65;
+        color: var(--mid);
+        max-width: 600px;
+        margin: 0 auto 48px;
+        font-weight: 400;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+      .btn-p {
+        font-family: var(--font);
+        font-size: 15px;
+        font-weight: 500;
+        background: var(--deep);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 30px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: opacity 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .btn-p:hover {
+        opacity: 0.82;
+      }
+      .btn-g {
+        font-family: var(--font);
+        font-size: 15px;
+        color: var(--rich);
+        background: transparent;
+        border: 1px solid var(--ash);
+        border-radius: 9999px;
+        padding: 11px 26px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .btn-g:hover {
+        background: var(--ghost);
+      }
+
+      /* ── Demo ────────────────────────────────────────────────────────────────── */
+      .demo-wrap {
+        padding: 0 56px 108px;
+      }
+      .demo-box {
+        max-width: 1160px;
+        margin: 0 auto;
+        border: 1px solid var(--ash);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 2px 24px rgba(0, 0, 0, 0.07);
+      }
+      .demo-bar {
+        height: 44px;
+        background: var(--ghost);
+        border-bottom: 1px solid var(--ash);
+        display: flex;
+        align-items: center;
+        padding: 0 18px;
+        gap: 9px;
+      }
+      .db-dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+      }
+      .demo-url {
+        flex: 1;
+        margin: 0 14px;
+        height: 25px;
+        background: var(--canvas);
+        border: 1px solid var(--ash);
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        font-size: 12px;
+        font-family: var(--mono);
+        color: var(--mid);
+      }
+      .demo-body {
+        display: flex;
+        height: 560px;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 180px;
+        border-right: 1px solid var(--ash);
+        background: var(--ghost);
+        padding: 14px 0;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .sb-head {
+        padding: 9px 18px 14px;
+        font-size: 11px;
+        font-family: var(--mono);
+        color: var(--mid);
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+      .sb-item {
+        padding: 9px 18px;
+        font-size: 13px;
+        color: var(--mid);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        cursor: pointer;
+        transition: background 0.1s;
+      }
+      .sb-item:hover,
+      .sb-item.on {
+        background: var(--ash);
+        color: var(--rich);
+      }
+      .s-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .sb-foot {
+        margin-top: auto;
+        padding: 16px 18px;
+        border-top: 1px solid var(--ash);
+      }
+      .sb-foot-label {
+        font-size: 12px;
+        font-family: var(--mono);
+        color: var(--mid);
+        margin-bottom: 8px;
+      }
+      .progress-bar {
+        height: 3px;
+        background: var(--ash);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--rich);
+        border-radius: 2px;
+        width: 62%;
+      }
+
+      /* Main canvas */
+      .demo-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .toolbar {
+        height: 40px;
+        border-bottom: 1px solid var(--ash);
+        display: flex;
+        align-items: center;
+        padding: 0 18px;
+        gap: 9px;
+        font-size: 12px;
+        color: var(--mid);
+        flex-shrink: 0;
+      }
+      .t-name {
+        font-weight: 600;
+        color: var(--rich);
+        font-size: 13px;
+      }
+      .t-sep {
+        color: var(--ash);
+      }
+      .t-pill {
+        font-family: var(--mono);
+        background: var(--ghost);
+        padding: 2px 9px;
+        border-radius: 6px;
+        font-size: 11px;
+      }
+      .counters {
+        margin-left: auto;
+        display: flex;
+        gap: 16px;
+      }
+      .cnt {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+      .cnt.p {
+        color: var(--green);
+      }
+      .cnt.f {
+        color: var(--red);
+      }
+
+      .fb-canvas {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+      }
+      .commentary {
+        height: 72px;
+        border-top: 1px solid var(--ash);
+        background: var(--ghost);
+        padding: 10px 18px;
+        font-size: 12px;
+        font-family: var(--mono);
+        color: var(--mid);
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .cl {
+        padding: 2px 0;
+        transition: opacity 0.4s;
+        line-height: 1.6;
+      }
+
+      /* Fishbone animations */
+      @keyframes grow {
+        from {
+          stroke-dashoffset: 130;
+        }
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        60% {
+          transform: scale(1.3);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.35;
+        }
+      }
+      .br {
+        stroke-dasharray: 130;
+        stroke-dashoffset: 130;
+        animation: grow 0.5s ease forwards;
+      }
+      .bd {
+        transform-origin: center;
+        transform: scale(0);
+        opacity: 0;
+        animation: pop 0.3s ease forwards;
+      }
+      .running {
+        animation: pulse 1.4s ease-in-out infinite;
+      }
+
+      /* ── How it works ────────────────────────────────────────────────────────── */
+      .how-sec {
+        padding: 0 56px 108px;
+        border-top: 1px solid var(--ash);
+      }
+      .how-inner {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding-top: 88px;
+      }
+      .sec-label {
+        font-size: 13px;
+        font-family: var(--mono);
+        color: var(--mid);
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        margin-bottom: 18px;
+      }
+      .sec-title {
+        font-size: 36px;
+        font-weight: 600;
+        letter-spacing: -1.2px;
+        color: var(--deep);
+        margin-bottom: 12px;
+        line-height: 1.15;
+      }
+      .sec-sub {
+        font-size: 17px;
+        color: var(--mid);
+        margin-bottom: 52px;
+        line-height: 1.65;
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        border: 1px solid var(--ash);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .step {
+        padding: 28px;
+        border-right: 1px solid var(--ash);
+      }
+      .step:last-child {
+        border-right: none;
+      }
+      .step-n {
+        font-size: 12px;
+        font-family: var(--mono);
+        color: var(--mid);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .step-n::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--ash);
+      }
+      .step-t {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--deep);
+        margin-bottom: 10px;
+      }
+      .step-d {
+        font-size: 14px;
+        color: var(--mid);
+        line-height: 1.65;
+      }
+
+      /* ── Features ────────────────────────────────────────────────────────────── */
+      .feat-sec {
+        padding: 88px 56px 108px;
+        max-width: 1160px;
+        margin: 0 auto;
+      }
+      .feat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--ash);
+        border: 1px solid var(--ash);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .fc {
+        background: var(--canvas);
+        padding: 32px 28px;
+        transition: background 0.15s;
+      }
+      .fc:hover {
+        background: var(--ghost);
+      }
+      .fc-icon {
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--ash);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+        font-size: 19px;
+      }
+      .fc-t {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--deep);
+        margin-bottom: 10px;
+      }
+      .fc-d {
+        font-size: 14px;
+        color: var(--mid);
+        line-height: 1.65;
+      }
+
+      /* ── Release verdict ─────────────────────────────────────────────────────── */
+      .verdict-sec {
+        padding: 0 56px 108px;
+      }
+      .verdict-inner {
+        max-width: 1160px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 56px;
+        align-items: start;
+      }
+      .verdict-text {
+        padding-top: 18px;
+      }
+      .vbadges {
+        margin-top: 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .vb {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        border: 1px solid var(--ash);
+        border-radius: 12px;
+        font-size: 14px;
+      }
+      .vb-ic {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .vb.go .vb-ic {
+        background: #e6faea;
+        color: var(--green);
+      }
+      .vb.hold .vb-ic {
+        background: #fff8e6;
+        color: #d97706;
+      }
+      .vb.blocked .vb-ic {
+        background: #fef2f2;
+        color: var(--red);
+      }
+      .vb-l {
+        font-weight: 600;
+        color: var(--deep);
+        font-size: 15px;
+      }
+      .vb-d {
+        color: var(--mid);
+        font-size: 13px;
+        margin-top: 2px;
+      }
+      .code {
+        background: var(--ghost);
+        border: 1px solid var(--ash);
+        border-radius: 14px;
+        padding: 26px;
+        font-family: var(--mono);
+        font-size: 13px;
+        line-height: 2;
+        color: var(--rich);
+      }
+      .c-comment {
+        color: var(--mid);
+      }
+      .c-ok {
+        color: var(--green);
+      }
+      .c-warn {
+        color: #d97706;
+      }
+
+      /* ── Stats ───────────────────────────────────────────────────────────────── */
+      .stats-sec {
+        padding: 0 56px;
+        border-top: 1px solid var(--ash);
+        border-bottom: 1px solid var(--ash);
+      }
+      .stats-inner {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 72px 0;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--ash);
+        border: 1px solid var(--ash);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .stat {
+        background: var(--canvas);
+        padding: 36px 28px;
+        text-align: center;
+      }
+      .stat-n {
+        font-size: 52px;
+        font-weight: 600;
+        color: var(--deep);
+        letter-spacing: -2.5px;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+      .stat-l {
+        font-size: 14px;
+        color: var(--mid);
+      }
+
+      /* ── CLI ─────────────────────────────────────────────────────────────────── */
+      .cli-sec {
+        padding: 88px 56px 108px;
+        max-width: 1160px;
+        margin: 0 auto;
+      }
+      .cli-box {
+        background: #0a0a0a;
+        border-radius: 14px;
+        overflow: hidden;
+        margin-top: 52px;
+      }
+      .cli-bar {
+        height: 40px;
+        background: #1a1a1a;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        gap: 7px;
+      }
+      .cli-body {
+        padding: 24px 28px;
+        font-family: var(--mono);
+        font-size: 13.5px;
+        line-height: 2;
+      }
+      .cp {
+        color: #555;
+      }
+      .cc {
+        color: #fff;
+      }
+      .co {
+        color: #878787;
+      }
+      .cs {
+        color: var(--green);
+      }
+      .ce {
+        color: var(--red);
+      }
+      .cw {
+        color: #d97706;
+      }
+
+      /* ── CTA ─────────────────────────────────────────────────────────────────── */
+      .cta-sec {
+        padding: 112px 56px;
+        text-align: center;
+        border-top: 1px solid var(--ash);
+      }
+      .cta-t {
+        font-size: 52px;
+        font-weight: 600;
+        letter-spacing: -2.6px;
+        color: var(--deep);
+        margin-bottom: 20px;
+        line-height: 1.08;
+      }
+      .cta-s {
+        font-size: 18px;
+        color: var(--mid);
+        margin-bottom: 48px;
+      }
+      .cta-acts {
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        margin-bottom: 36px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--ghost);
+        border: 1px solid var(--ash);
+        border-radius: 26px;
+        padding: 5px 16px;
+        font-size: 13px;
+        color: var(--mid);
+        font-family: var(--mono);
+      }
+      .badge-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+
+      /* ── Footer ──────────────────────────────────────────────────────────────── */
+      footer {
+        border-top: 1px solid var(--ash);
+        padding: 36px 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .footer-links {
+        display: flex;
+        gap: 24px;
+      }
+      .fl {
+        font-size: 14px;
+        color: var(--mid);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+      .fl:hover {
+        color: var(--rich);
+      }
+      .fc-copy {
+        font-size: 13px;
+        color: var(--mid);
+      }
+
+      /* ── Responsive ──────────────────────────────────────────────────────────── */
+      @media (max-width: 900px) {
+        .feat-grid,
+        .steps {
+          grid-template-columns: 1fr;
+        }
+        .stats-inner {
+          grid-template-columns: 1fr 1fr;
+        }
+        .verdict-inner {
+          grid-template-columns: 1fr;
+        }
+        h1 {
+          font-size: 44px;
+          letter-spacing: -2.2px;
+        }
+        .cta-t {
+          font-size: 38px;
+          letter-spacing: -1.9px;
+        }
+        nav,
+        .demo-wrap,
+        .how-sec,
+        .feat-sec,
+        .verdict-sec,
+        .stats-sec,
+        .cli-sec,
+        .cta-sec,
+        footer {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+        .hero {
+          padding: 80px 24px 64px;
+        }
+        .demo-body {
+          height: 440px;
+        }
+        .sidebar {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVIGATION -->
+    <nav>
+      <div class="logo"><span class="logo-dot"></span>Pathlight</div>
+      <div class="nav-links">
+        <a href="#how" class="nl">How it works</a>
+        <a href="#features" class="nl">Features</a>
+        <a href="#cli" class="nl">CLI</a>
+        <a href="#verdict" class="nl">Release verdict</a>
+      </div>
+      <a href="http://127.0.0.1:4242/config" class="nav-btn">Get started</a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="eyebrow"><span class="eyebrow-dot"></span>v1.1 · Open source · Local-first</div>
+      <h1>Your tests don't tell you<br /><span>if you're ready to ship.</span></h1>
+      <p class="hero-sub">
+        Pathlight connects Playwright runs to user journeys, business rules, and release confidence
+        — live, in a fishbone diagram, with a GO / HOLD / BLOCKED verdict.
+      </p>
+      <div class="actions">
+        <a href="http://127.0.0.1:4242/config" class="btn-p">
+          <svg width="15" height="15" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path
+              d="M7 1v12M1 7h12"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+          Start free
+        </a>
+        <a href="#how" class="btn-g">
+          <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <polygon points="2,1 11,6 2,11" fill="currentColor" />
+          </svg>
+          See how it works
+        </a>
+      </div>
+    </section>
+
+    <!-- FISHBONE DEMO -->
+    <section class="demo-wrap">
+      <div class="demo-box" aria-label="Pathlight fishbone diagram demo">
+        <div class="demo-bar">
+          <div class="db-dot" style="background: #ff5f57"></div>
+          <div class="db-dot" style="background: #ffbd2e"></div>
+          <div class="db-dot" style="background: #28ca41"></div>
+          <div class="demo-url">http://127.0.0.1:4242</div>
+          <span style="font-size: 12px; color: var(--mid); font-family: var(--mono)"
+            >Pathlight</span
+          >
+        </div>
+        <div class="demo-body">
+          <div class="sidebar">
+            <div class="sb-head">Stages</div>
+            <div class="sb-item on">
+              <div class="s-dot" style="background: var(--green)"></div>
+              Landing
+            </div>
+            <div class="sb-item">
+              <div class="s-dot" style="background: #d97706"></div>
+              Auth
+            </div>
+            <div class="sb-item">
+              <div class="s-dot" style="background: var(--red)"></div>
+              Checkout
+            </div>
+            <div class="sb-item">
+              <div class="s-dot" style="background: var(--ash)"></div>
+              Dashboard
+            </div>
+            <div class="sb-foot">
+              <div class="sb-foot-label">Run in progress</div>
+              <div class="progress-bar"><div class="progress-fill"></div></div>
+            </div>
+          </div>
+          <div class="demo-main">
+            <div class="toolbar">
+              <span class="t-name">ZovKu Platform</span>
+              <span class="t-sep">·</span>
+              <span style="font-size: 13px">Landing + Waitlist</span>
+              <span class="t-pill">run_20260601_004</span>
+              <div class="counters">
+                <span class="cnt p">✓ 14 passed</span>
+                <span class="cnt f">✗ 2 failed</span>
+              </div>
+            </div>
+            <div class="fb-canvas">
+              <!-- Scaled-up fishbone: viewBox 0 0 940 420 for more breathing room -->
+              <svg
+                width="100%"
+                height="100%"
+                viewBox="0 0 940 420"
+                preserveAspectRatio="xMidYMid meet"
+                role="img"
+                aria-label="Live fishbone diagram showing test results per module"
+              >
+                <title>Pathlight fishbone — ZovKu Platform run</title>
+
+                <!-- Spine -->
+                <text
+                  x="28"
+                  y="30"
+                  font-family="'Geist Mono',monospace"
+                  font-size="12"
+                  fill="#737373"
+                  letter-spacing="0.05em"
+                >
+                  HIGHEST PRIORITY
+                </text>
+                <line x1="68" y1="210" x2="860" y2="210" stroke="#e5e5e5" stroke-width="1.8" />
+                <circle cx="68" cy="210" r="5" fill="#0a0a0a" />
+                <polygon points="866,210 853,203 853,217" fill="#e5e5e5" />
+
+                <!-- Module: Waitlist Form — all green -->
+                <line x1="188" y1="210" x2="188" y2="136" stroke="#0a0a0a" stroke-width="1.2" />
+                <text
+                  x="193"
+                  y="130"
+                  font-family="'Geist',sans-serif"
+                  font-size="12"
+                  fill="#0a0a0a"
+                  font-weight="600"
+                >
+                  Waitlist Form
+                </text>
+                <line
+                  class="br"
+                  x1="188"
+                  y1="178"
+                  x2="260"
+                  y2="118"
+                  stroke="#10c22b"
+                  stroke-width="1.8"
+                  style="animation-delay: 0.1s"
+                />
+                <circle
+                  class="bd"
+                  cx="260"
+                  cy="118"
+                  r="6"
+                  fill="#10c22b"
+                  style="animation-delay: 0.5s"
+                />
+                <text
+                  x="269"
+                  y="123"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#737373"
+                >
+                  E2E-001
+                </text>
+                <line
+                  class="br"
+                  x1="188"
+                  y1="196"
+                  x2="260"
+                  y2="150"
+                  stroke="#10c22b"
+                  stroke-width="1.8"
+                  style="animation-delay: 0.2s"
+                />
+                <circle
+                  class="bd"
+                  cx="260"
+                  cy="150"
+                  r="6"
+                  fill="#10c22b"
+                  style="animation-delay: 0.6s"
+                />
+                <text
+                  x="269"
+                  y="155"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#737373"
+                >
+                  E2E-002
+                </text>
+                <line
+                  class="br"
+                  x1="188"
+                  y1="234"
+                  x2="260"
+                  y2="276"
+                  stroke="#10c22b"
+                  stroke-width="1.8"
+                  style="animation-delay: 0.3s"
+                />
+                <circle
+                  class="bd"
+                  cx="260"
+                  cy="276"
+                  r="6"
+                  fill="#10c22b"
+                  style="animation-delay: 0.7s"
+                />
+                <text
+                  x="269"
+                  y="281"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#737373"
+                >
+                  E2E-003
+                </text>
+                <line
+                  class="br"
+                  x1="188"
+                  y1="250"
+                  x2="260"
+                  y2="304"
+                  stroke="#10c22b"
+                  stroke-width="1.8"
+                  style="animation-delay: 0.35s"
+                />
+                <circle
+                  class="bd"
+                  cx="260"
+                  cy="304"
+                  r="6"
+                  fill="#10c22b"
+                  style="animation-delay: 0.75s"
+                />
+                <text
+                  x="269"
+                  y="309"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#737373"
+                >
+                  E2E-004
+                </text>
+                <circle cx="188" cy="210" r="5" fill="#0a0a0a" />
+                <circle cx="188" cy="126" r="5" fill="#10c22b" />
+
+                <!-- Module: Hero Section — all green -->
+                <line x1="370" y1="210" x2="370" y2="130" stroke="#0a0a0a" stroke-width="1.2" />
+                <text
+                  x="375"
+                  y="124"
+                  font-family="'Geist',sans-serif"
+                  font-size="12"
+                  fill="#0a0a0a"
+                  font-weight="600"
+                >
+                  Hero Section
+                </text>
+                <line
+                  class="br"
+                  x1="370"
+                  y1="172"
+                  x2="446"
+                  y2="106"
+                  stroke="#10c22b"
+                  stroke-width="1.8"
+                  style="animation-delay: 0.6s"
+                />
+                <circle
+                  class="bd"
+                  cx="446"
+                  cy="106"
+                  r="6"
+                  fill="#10c22b"
+                  style="animation-delay: 1s"
+                />
+                <text
+                  x="455"
+                  y="111"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#737373"
+                >
+                  E2E-005
+                </text>
+                <line
+                  class="br"
+                  x1="370"
+                  y1="192"
+                  x2="446"
+                  y2="144"
+                  stroke="#10c22b"
+                  stroke-width="1.8"
+                  style="animation-delay: 0.7s"
+                />
+                <circle
+                  class="bd"
+                  cx="446"
+                  cy="144"
+                  r="6"
+                  fill="#10c22b"
+                  style="animation-delay: 1.1s"
+                />
+                <text
+                  x="455"
+                  y="149"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#737373"
+                >
+                  E2E-006
+                </text>
+                <line
+                  class="br"
+                  x1="370"
+                  y1="236"
+                  x2="446"
+                  y2="280"
+                  stroke="#10c22b"
+                  stroke-width="1.8"
+                  style="animation-delay: 0.8s"
+                />
+                <circle
+                  class="bd"
+                  cx="446"
+                  cy="280"
+                  r="6"
+                  fill="#10c22b"
+                  style="animation-delay: 1.2s"
+                />
+                <text
+                  x="455"
+                  y="285"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#737373"
+                >
+                  E2E-007
+                </text>
+                <circle cx="370" cy="210" r="5" fill="#0a0a0a" />
+                <circle cx="370" cy="120" r="5" fill="#10c22b" />
+
+                <!-- Module: Auth Flow — 2 failed -->
+                <line x1="560" y1="210" x2="560" y2="122" stroke="#0a0a0a" stroke-width="1.2" />
+                <text
+                  x="565"
+                  y="116"
+                  font-family="'Geist',sans-serif"
+                  font-size="12"
+                  fill="#0a0a0a"
+                  font-weight="600"
+                >
+                  Auth Flow
+                </text>
+                <line
+                  class="br"
+                  x1="560"
+                  y1="168"
+                  x2="638"
+                  y2="94"
+                  stroke="#10c22b"
+                  stroke-width="1.8"
+                  style="animation-delay: 1.2s"
+                />
+                <circle
+                  class="bd"
+                  cx="638"
+                  cy="94"
+                  r="6"
+                  fill="#10c22b"
+                  style="animation-delay: 1.6s"
+                />
+                <text
+                  x="647"
+                  y="99"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#737373"
+                >
+                  E2E-012
+                </text>
+                <line
+                  class="br"
+                  x1="560"
+                  y1="188"
+                  x2="638"
+                  y2="132"
+                  stroke="#c22b10"
+                  stroke-width="1.8"
+                  style="animation-delay: 1.3s"
+                />
+                <circle
+                  class="bd"
+                  cx="638"
+                  cy="132"
+                  r="6"
+                  fill="#c22b10"
+                  style="animation-delay: 1.7s"
+                />
+                <text
+                  x="647"
+                  y="137"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#c22b10"
+                  font-weight="600"
+                >
+                  E2E-013 ✗
+                </text>
+                <line
+                  class="br"
+                  x1="560"
+                  y1="236"
+                  x2="638"
+                  y2="286"
+                  stroke="#10c22b"
+                  stroke-width="1.8"
+                  style="animation-delay: 1.4s"
+                />
+                <circle
+                  class="bd"
+                  cx="638"
+                  cy="286"
+                  r="6"
+                  fill="#10c22b"
+                  style="animation-delay: 1.8s"
+                />
+                <text
+                  x="647"
+                  y="291"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#737373"
+                >
+                  E2E-014
+                </text>
+                <line
+                  class="br"
+                  x1="560"
+                  y1="254"
+                  x2="638"
+                  y2="316"
+                  stroke="#c22b10"
+                  stroke-width="1.8"
+                  style="animation-delay: 1.5s"
+                />
+                <circle
+                  class="bd"
+                  cx="638"
+                  cy="316"
+                  r="6"
+                  fill="#c22b10"
+                  style="animation-delay: 1.9s"
+                />
+                <text
+                  x="647"
+                  y="321"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#c22b10"
+                  font-weight="600"
+                >
+                  E2E-015 ✗
+                </text>
+                <circle cx="560" cy="210" r="5" fill="#0a0a0a" />
+                <circle cx="560" cy="112" r="5" fill="#c22b10" />
+
+                <!-- Module: Checkout — running -->
+                <line x1="748" y1="210" x2="748" y2="142" stroke="#0a0a0a" stroke-width="1.2" />
+                <text
+                  x="753"
+                  y="136"
+                  font-family="'Geist',sans-serif"
+                  font-size="12"
+                  fill="#0a0a0a"
+                  font-weight="600"
+                >
+                  Checkout
+                </text>
+                <line
+                  class="br"
+                  x1="748"
+                  y1="180"
+                  x2="820"
+                  y2="118"
+                  stroke="#d97706"
+                  stroke-width="1.8"
+                  stroke-dasharray="5,4"
+                  style="animation-delay: 2s"
+                />
+                <circle
+                  class="bd running"
+                  cx="820"
+                  cy="118"
+                  r="6"
+                  fill="#d97706"
+                  style="animation-delay: 2.3s"
+                />
+                <text
+                  x="829"
+                  y="123"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#d97706"
+                >
+                  E2E-020
+                </text>
+                <line
+                  class="br"
+                  x1="748"
+                  y1="200"
+                  x2="820"
+                  y2="158"
+                  stroke="#e5e5e5"
+                  stroke-width="1.8"
+                  style="animation-delay: 2.1s"
+                />
+                <circle
+                  class="bd"
+                  cx="820"
+                  cy="158"
+                  r="6"
+                  fill="#f2f2f2"
+                  stroke="#c8c8c8"
+                  stroke-width="1"
+                  style="animation-delay: 2.4s"
+                />
+                <text
+                  x="829"
+                  y="163"
+                  font-family="'Geist Mono',monospace"
+                  font-size="11"
+                  fill="#737373"
+                >
+                  E2E-021
+                </text>
+                <circle cx="748" cy="210" r="5" fill="#0a0a0a" />
+                <circle class="running" cx="748" cy="132" r="5" fill="#d97706" />
+
+                <!-- Legend -->
+                <g transform="translate(28,366)">
+                  <circle cx="7" cy="7" r="6" fill="#10c22b" />
+                  <text
+                    x="18"
+                    y="12"
+                    font-family="'Geist',sans-serif"
+                    font-size="12"
+                    fill="#737373"
+                  >
+                    passed
+                  </text>
+                  <circle cx="88" cy="7" r="6" fill="#c22b10" />
+                  <text
+                    x="99"
+                    y="12"
+                    font-family="'Geist',sans-serif"
+                    font-size="12"
+                    fill="#737373"
+                  >
+                    failed
+                  </text>
+                  <circle cx="158" cy="7" r="6" fill="#d97706" />
+                  <text
+                    x="169"
+                    y="12"
+                    font-family="'Geist',sans-serif"
+                    font-size="12"
+                    fill="#737373"
+                  >
+                    running
+                  </text>
+                  <circle cx="238" cy="7" r="6" fill="#f2f2f2" stroke="#c8c8c8" stroke-width="1" />
+                  <text
+                    x="249"
+                    y="12"
+                    font-family="'Geist',sans-serif"
+                    font-size="12"
+                    fill="#737373"
+                  >
+                    pending
+                  </text>
+                </g>
+              </svg>
+            </div>
+            <div class="commentary" id="commentary">
+              <div class="cl" id="cl1">
+                S1 · E2E-001 · Waitlist form renders correctly —
+                <span style="color: var(--green)">passed</span>
+              </div>
+              <div class="cl" id="cl2" style="opacity: 0.3">
+                S1 · E2E-013 · OAuth token refresh with expired session —
+                <span style="color: var(--red)"
+                  >failed — AssertionError: expected 401, got 500</span
+                >
+              </div>
+              <div class="cl" id="cl3" style="opacity: 0.3">
+                S1 · E2E-020 · Stripe checkout renders payment fields —
+                <span style="color: #d97706">running...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-sec" id="how">
+      <div class="how-inner">
+        <div class="sec-label">How it works</div>
+        <h2 class="sec-title">From test run to release decision<br />in four steps.</h2>
+        <p class="sec-sub">
+          No agents to install. No config changes in your project. Point Pathlight at it and run.
+        </p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-n">01</div>
+            <div class="step-t">Configure your project</div>
+            <div class="step-d">
+              Set your project root and Playwright config path on the config page. Pathlight reads
+              your tests — it never modifies them.
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-n">02</div>
+            <div class="step-t">Import or derive journeys</div>
+            <div class="step-d">
+              Upload a CSV of user journeys, or connect JIRA and let AI derive them from your user
+              stories. Lock the manifest when satisfied.
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-n">03</div>
+            <div class="step-t">Run your tests</div>
+            <div class="step-d">
+              Click Start run. Pathlight spawns Playwright with an injected reporter. Fishbone
+              branches animate live as results arrive over SSE.
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-n">04</div>
+            <div class="step-t">Read your verdict</div>
+            <div class="step-d">
+              GO · HOLD · BLOCKED. Computed from journey priority, business rule severity, and
+              jurisdiction. A static HTML report publishes automatically.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="feat-sec" id="features">
+      <div class="sec-label">Features</div>
+      <h2 class="sec-title">Everything tests are missing.</h2>
+      <p class="sec-sub">
+        Pathlight thinks in user flows, not test files. Every feature reinforces that distinction.
+      </p>
+      <div class="feat-grid">
+        <div class="fc">
+          <div class="fc-icon">🦴</div>
+          <div class="fc-t">Live fishbone visualisation</div>
+          <div class="fc-d">
+            Journeys as bones, results as colour. Green, red, amber, and blocked states update in
+            real time as Playwright runs.
+          </div>
+        </div>
+        <div class="fc">
+          <div class="fc-icon">🧠</div>
+          <div class="fc-t">AI journey derivation</div>
+          <div class="fc-d">
+            Connect JIRA. Claude reads your user stories and derives happy paths, unhappy paths,
+            edge cases, and boundary conditions automatically.
+          </div>
+        </div>
+        <div class="fc">
+          <div class="fc-icon">🗺️</div>
+          <div class="fc-t">Semantic test mapping</div>
+          <div class="fc-d">
+            Point Pathlight at your test directory. It maps spec files to manifest journeys — no
+            tagging required beyond a bracketed ID in the title.
+          </div>
+        </div>
+        <div class="fc">
+          <div class="fc-icon">⚖️</div>
+          <div class="fc-t">Business rule severity</div>
+          <div class="fc-d">
+            Tag journeys with critical, high, medium, or low severity rules. A failing critical rule
+            blocks the release regardless of overall pass rate.
+          </div>
+        </div>
+        <div class="fc">
+          <div class="fc-icon">🌏</div>
+          <div class="fc-t">Jurisdiction-aware risk</div>
+          <div class="fc-d">
+            Business rules carry NZ, AU, or global jurisdiction. Risk statements reference the
+            Privacy Act 2020 (NZ) or Privacy Act 1988 (AU) where relevant.
+          </div>
+        </div>
+        <div class="fc">
+          <div class="fc-icon">⌨️</div>
+          <div class="fc-t">CLI quality gates</div>
+          <div class="fc-d">
+            Run
+            <code
+              style="
+                font-family: var(--mono);
+                font-size: 12px;
+                background: var(--ghost);
+                padding: 1px 6px;
+                border-radius: 4px;
+              "
+              >pathlight gate</code
+            >
+            in CI. Exit code 0 on pass, 1 on fail. Three-line GitHub Actions integration.
+          </div>
+        </div>
+        <div class="fc">
+          <div class="fc-icon">🔌</div>
+          <div class="fc-t">Provider-agnostic AI</div>
+          <div class="fc-d">
+            Claude, OpenAI, Gemini, or local Ollama. Swap providers via config — zero code changes.
+            Offline-capable for government and healthcare teams.
+          </div>
+        </div>
+        <div class="fc">
+          <div class="fc-icon">🐛</div>
+          <div class="fc-t">JIRA bug lifecycle</div>
+          <div class="fc-d">
+            Create bugs from the evidence panel. Auto-create after consecutive failures. Pathlight
+            comments when the journey passes again.
+          </div>
+        </div>
+        <div class="fc">
+          <div class="fc-icon">📋</div>
+          <div class="fc-t">Compliance audit trail</div>
+          <div class="fc-d">
+            Every business rule, its severity, jurisdiction, and whether the journey verifying it
+            passed. Timestamped. Linked to a run ID.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RELEASE VERDICT -->
+    <section class="verdict-sec" id="verdict">
+      <div class="verdict-inner">
+        <div class="verdict-text">
+          <div class="sec-label">Release verdict</div>
+          <h2 class="sec-title">Not a pass rate.<br />A release decision.</h2>
+          <p class="sec-sub" style="margin-bottom: 0; font-size: 16px; line-height: 1.65">
+            Pathlight computes GO · HOLD · BLOCKED from journey priority, business rule severity,
+            untested critical paths, and jurisdiction. It's what your CTO needs — not a spreadsheet
+            of green ticks.
+          </p>
+          <div class="vbadges">
+            <div class="vb go">
+              <div class="vb-ic">✓</div>
+              <div>
+                <div class="vb-l">GO</div>
+                <div class="vb-d">All critical journeys passed. Minor gaps documented.</div>
+              </div>
+            </div>
+            <div class="vb hold">
+              <div class="vb-ic">⚠</div>
+              <div>
+                <div class="vb-l">HOLD</div>
+                <div class="vb-d">High-priority journeys failing. Core flows at risk.</div>
+              </div>
+            </div>
+            <div class="vb blocked">
+              <div class="vb-ic">✗</div>
+              <div>
+                <div class="vb-l">BLOCKED</div>
+                <div class="vb-d">
+                  Critical rule untested or failed. Legal or core product risk.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="code">
+          <span class="c-comment"># Run in CI after your Playwright suite</span>
+
+          <span style="color: var(--rich)"
+            >$ pathlight gate \ --min-pass-rate=90 \ --no-critical-failures</span
+          >
+
+          <span class="c-comment">─────────────────────────────────────</span>
+          <span class="c-ok"> Pathlight Quality Gate</span>
+          <span class="c-comment">─────────────────────────────────────</span>
+          Run: run_20260601_004 Pass rate: 87% (14/16 journeys) Critical: 3 rules — all verified ✓
+          High: 1 journey FAILED ✗ Untested: 0 journeys
+
+          <span class="c-comment"> Verdict:</span>
+          <span class="c-warn"> ⚠ HOLD — high-priority failure E2E-013: OAuth token refresh</span>
+
+          Exit code: 1
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats-sec">
+      <div class="stats-inner">
+        <div class="stat">
+          <div class="stat-n" data-target="174">0</div>
+          <div class="stat-l">Tests passing</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n" data-target="12">0</div>
+          <div class="stat-l">CLI commands</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n" data-target="4">0</div>
+          <div class="stat-l">AI providers supported</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n" data-target="0">0</div>
+          <div class="stat-l">Lines changed in your project</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLI -->
+    <section class="cli-sec" id="cli">
+      <div class="sec-label">CLI</div>
+      <h2 class="sec-title">A CI citizen from day one.</h2>
+      <p class="sec-sub">
+        The Pathlight CLI speaks to your running server. Quality gates, journey lists, gap reports,
+        AI derivation — all from the terminal.
+      </p>
+      <div class="cli-box">
+        <div class="cli-bar">
+          <div class="db-dot" style="background: #ff5f57"></div>
+          <div class="db-dot" style="background: #ffbd2e"></div>
+          <div class="db-dot" style="background: #28ca41"></div>
+        </div>
+        <div class="cli-body">
+          <div><span class="cp">$ </span><span class="cc">pathlight journeys</span></div>
+          <div class="co">E2E-001 Waitlist form renders correctly passed happy</div>
+          <div class="co">
+            E2E-013 OAuth token refresh with expired session <span class="ce">failed</span> unhappy
+            ← critical rule
+          </div>
+          <div class="co">
+            E2E-020 Stripe checkout renders payment fields <span class="cw">running</span> happy
+          </div>
+          <br />
+          <div><span class="cp">$ </span><span class="cc">pathlight gaps</span></div>
+          <div class="co">E2E-031 Password reset via email link untested</div>
+          <div class="co">E2E-032 Account deletion with active subscription untested</div>
+          <br />
+          <div>
+            <span class="cp">$ </span
+            ><span class="cc">pathlight gate --min-pass-rate=90 --no-critical-failures</span>
+          </div>
+          <div class="cw">⚠ HOLD — pass rate 87%, 1 high-priority failure</div>
+          <div><span class="cp">$ </span><span class="cc">echo $?</span></div>
+          <div class="co">1</div>
+          <br />
+          <div>
+            <span class="cp">$ </span
+            ><span class="cc">pathlight query "which journeys failed in the last 3 runs"</span>
+          </div>
+          <div class="co">E2E-013 failed in all 3 of the last runs.</div>
+          <div class="co">E2E-015 failed once (run_20260531_003).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-sec">
+      <h2 class="cta-t">Know if you're ready to ship.<br />Not just if tests are green.</h2>
+      <p class="cta-s">Local-first. Open source core. No account required to start.</p>
+      <div class="cta-acts">
+        <a href="http://127.0.0.1:4242/config" class="btn-p">Get started — it's free</a>
+        <a href="#how" class="btn-g">Read the docs</a>
+      </div>
+      <div class="badge">
+        <span class="badge-dot"></span>npm install &amp;&amp; npm run dev — running in 60 seconds
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="logo"><span class="logo-dot"></span>Pathlight</div>
+      <div class="footer-links">
+        <a href="#" class="fl">Docs</a>
+        <a href="#" class="fl">GitHub</a>
+        <a href="#" class="fl">Roadmap</a>
+        <a href="#" class="fl">Changelog</a>
+      </div>
+      <div class="fc-copy">Kirrt Tech · 2026</div>
+    </footer>
+
+    <script>
+      // Cycle commentary lines
+      const lines = [
+        document.getElementById("cl1"),
+        document.getElementById("cl2"),
+        document.getElementById("cl3"),
+      ];
+      let cur = 0;
+      function cycleLines() {
+        lines.forEach((l, i) => {
+          l.style.opacity = i === cur ? "1" : "0.3";
+        });
+        cur = (cur + 1) % lines.length;
+      }
+      setInterval(cycleLines, 2800);
+
+      // Animate stat counters on scroll into view
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            e.target.querySelectorAll("[data-target]").forEach((el) => {
+              const target = parseInt(el.dataset.target, 10);
+              if (target === 0) {
+                el.textContent = "0";
+                return;
+              }
+              let v = 0;
+              const step = target / 60;
+              const t = setInterval(() => {
+                v = Math.min(v + step, target);
+                el.textContent = Math.floor(v);
+                if (v >= target) clearInterval(t);
+              }, 16);
+            });
+            io.unobserve(e.target);
+          });
+        },
+        { threshold: 0.4 },
+      );
+      const si = document.querySelector(".stats-inner");
+      if (si) io.observe(si);
+    </script>
+  </body>
+</html>

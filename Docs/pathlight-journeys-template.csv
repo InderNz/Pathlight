@@ -1,0 +1,43 @@
+id,summary,priority,priorityRank,stage,stageName,branchType,labels,linkedStories,description
+# Permanent journey ID,short journey summary,display tier,integer display order,stage key,stage label,branch category,comma-separated tags,linked story IDs,journey details
+E2E-001,Owner Creates Account and Completes Onboarding,High,1,S2,Core SMS Review Flow,happy,@smoke,US-005,"New owner signs up, verifies email, completes onboarding wizard, lands on dashboard."
+E2E-002,Owner Signup — Invalid Password and Duplicate Email Blocked,Highest,2,S2,Core SMS Review Flow,unhappy,@smoke,US-005,Owner attempts signup with weak password then duplicate email. Both blocked with inline errors.
+E2E-003,Owner Connects Google Business Profile Review Link,High,3,S2,Core SMS Review Flow,happy,@smoke,US-006,Owner adds Google review link in Settings. System validates and confirms. Dashboard banner clears.
+E2E-004,Owner Attempts to Save an Invalid Google Review Link,Highest,4,S2,Core SMS Review Flow,unhappy,,US-006,Owner saves a non-Google URL. Inline validation error shown. Link not saved.
+E2E-005,Owner Sends a Single Review Request SMS,High,5,S2,Core SMS Review Flow,happy,"@smoke,@critical",US-007,Owner sends SMS to customer. Preview shown. Dashboard confirms send. Activity feed updated.
+E2E-006,Owner Attempts to Send SMS to an Opted-Out Customer,Highest,6,S2,Core SMS Review Flow,unhappy,@critical,"US-007,US-013",Owner tries to send to opted-out number. System blocks with clear message. No SMS sent.
+E2E-007,Owner Attempts Duplicate SMS Send Within 30-Day Cooldown,Medium,7,S2,Core SMS Review Flow,edge,,US-007,Owner sends to customer already messaged 18 days ago. Cooldown detected. Send blocked.
+E2E-008,Owner Sends Bulk Review Requests via CSV Upload,High,8,S2,Core SMS Review Flow,happy,,US-008,Owner uploads CSV. Preview shows valid and invalid rows. Confirms send. Progress shown.
+E2E-009,Bulk CSV Upload — Invalid File Format and Oversized List,Highest,9,S2,Core SMS Review Flow,unhappy,,US-008,Owner uploads CSV with missing headers then 510-row file. Both rejected with clear errors.
+E2E-010,Happy Customer Rates 5 Stars and is Redirected to Google,High,10,S2,Core SMS Review Flow,happy,"@smoke,@critical","US-009,US-010","Customer taps link, rates 5 stars, sees Google prompt, taps button, taken to Google."
+E2E-011,Unhappy Customer Rates 2 Stars and Submits Private Feedback,High,11,S2,Core SMS Review Flow,happy,"@smoke,@critical","US-009,US-011","Customer taps 2 stars, sees private feedback form, submits text. Owner sees new feedback badge."
+E2E-012,Unhappy Customer Skips Private Feedback Text,Medium,12,S2,Core SMS Review Flow,edge,,US-011,"Customer rates 2 stars, skips feedback form. Outcome recorded as skipped. Not directed to Google."
+E2E-013,Owner Receives Real-Time Notification for Negative Feedback,High,13,S2,Core SMS Review Flow,happy,,US-012,Owner sees new 1-star feedback notification. Verifies event stored via API.
+E2E-014,Customer Opts Out via STOP and Owner Cannot Override,High,14,S2,Core SMS Review Flow,happy,@critical,US-013,Customer replies STOP. Opt-out recorded. Owner sees number in opted-out list. Cannot remove.
+E2E-015,Expired Review Link Clicked by Customer,Medium,15,S2,Core SMS Review Flow,edge,,US-009,"Customer clicks 30-day-expired link. Expired state shown. No rating, no Google redirect."
+E2E-016,Owner Reviews Dashboard Summary and Activity Feed,High,16,S3,Dashboard and Settings,happy,@smoke,US-014,Owner sees 4 metric cards with trend indicators and recent activity feed in reverse order.
+E2E-017,Owner Reads and Responds to Private Feedback,High,17,S3,Dashboard and Settings,happy,,US-015,"Owner sees unread badge, expands feedback, adds note, reveals phone, marks resolved."
+E2E-018,Owner Searches and Filters Customer List,High,18,S3,Dashboard and Settings,happy,,US-016,"Owner searches customer by name, filters by opted-out status, views detail, adds note."
+E2E-019,Owner Customises SMS Template,High,19,S3,Dashboard and Settings,happy,,US-017,Owner edits template with variables. Character counter and live preview update. Saved.
+E2E-020,Owner Attempts to Save SMS Template Without Mandatory Variables,Highest,20,S3,Dashboard and Settings,unhappy,,US-017,Owner removes [ReviewLink] and [FirstName]. Both blocked. STOP instruction auto-appended.
+E2E-021,Owner Updates Business Profile and Logo,High,21,S3,Dashboard and Settings,happy,,US-018,"Owner updates name, suburb, logo, account name, password. Unsaved changes dialog shown."
+E2E-022,Owner Invites and Revokes a Staff Member,High,22,S3,Dashboard and Settings,happy,,US-019,"Growth owner invites staff member, confirms in list, revokes access. Staff immediately removed."
+E2E-023,Starter Plan Owner Sees Staff Invite Blocked with Upgrade Prompt,Highest,23,S3,Dashboard and Settings,unhappy,,US-019,Starter owner sees disabled Invite Staff. Upgrade prompt shown. No invite form displayed.
+E2E-024,Owner Connects Google Account via OAuth,High,24,S4,Google and AI,happy,,US-020,Seeded OAuth connection. Owner sees connected email and disconnect option in settings.
+E2E-025,Google OAuth Connected Account Has No Business Profile Access,Highest,25,S4,Google and AI,unhappy,,US-020,Seeded OAuth with no real data. Dashboard shows error or empty Google Reviews card.
+E2E-026,Owner Triggers Manual Google Review Sync,High,26,S4,Google and AI,happy,,US-021,Owner with connected Google account triggers manual sync. Card updates with result.
+E2E-027,Owner Replies to a Google Review from Inside Zovku,High,27,S4,Google and AI,happy,,US-022,"Owner finds unreplied review, types reply, posts. Success confirmation shown."
+E2E-028,Happy Customer Is Offered AI-Drafted Google Review Text,High,28,S4,Google and AI,happy,,US-037,Customer rates 5 stars. AI suggestion shown. Copy and regenerate buttons present.
+E2E-029,AI Review Writing Unavailable — Happy Fork Continues Unaffected,Medium,29,S4,Google and AI,edge,,US-037,AI unavailable. No error shown to customer. Google Review button still present and functional.
+E2E-030,Owner Connects Facebook and TripAdvisor for Multi-Platform Monitoring,High,30,S4,Google and AI,happy,,US-038,SKIPPED: no test seeding endpoint for Facebook/TripAdvisor OAuth.
+E2E-031,Growth Feature Blocked on Starter Plan — Multi-Platform Monitoring,Highest,31,S4,Google and AI,unhappy,,US-038,SKIPPED: no test seeding endpoint for Facebook/TripAdvisor OAuth.
+E2E-032,New Owner Experiences 14-Day Free Trial,High,32,S5,Billing,happy,,US-023,Trial owner sees countdown banner. Full Starter features accessible. SMS send not blocked.
+E2E-033,Suspended Account — Trial Expired Without Payment,Medium,33,S5,Billing,edge,,US-023,Suspended owner sees suspension message. SMS send blocked. Reactivation via set-plan tested.
+E2E-034,Owner Subscribes to Starter Plan via Stripe Checkout,High,34,S5,Billing,happy,,US-024,Subscribe button present and links to Stripe. Post-payment active state asserted via set-plan.
+E2E-035,Stripe Checkout — Card Declined on Subscription,Highest,35,S5,Billing,unhappy,,US-024,SKIPPED: cannot automate Stripe Checkout UI card decline flow.
+E2E-036,Owner Cancels Subscription Without Friction,High,36,S5,Billing,happy,,US-025,Cancellation simulated via webhook. Billing page shows cancelled state with access end date.
+E2E-037,Owner Views Invoice History and Downloads PDF,High,37,S5,Billing,happy,,US-026,Seeded invoice appears in billing history. Download button present. NZ$49 Paid status shown.
+E2E-038,Failed Payment Handled with Grace Period and Recovery,Highest,38,S5,Billing,unhappy,,US-027,Payment failed simulated. In-app banner shown. Recovery simulated. Banner clears.
+E2E-039,Owner Reactivates Subscription After Cancellation,Medium,39,S5,Billing,edge,,US-025,Cancellation then reactivation simulated. Active state restored. Cancellation message cleared.
+E2E-057,Owner Sends Review Request via Email Channel,High,40,S5,Billing,happy,,US-043,Owner sends email review request. Success confirmed. Activity feed updated.
+E2E-058,Email Review Request Blocked by 30-Day Cooldown,Medium,41,S5,Billing,edge,,US-043,Email request sent to customer already in cooldown window. Second send blocked.
