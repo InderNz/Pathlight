@@ -1,0 +1,10 @@
+{
+  "name": "@pathlight/server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "dependencies": {
+    "@pathlight/manifest-schema": "*",
+    "@pathlight/ai-provider": "*"
+  }
+}
