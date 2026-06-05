@@ -1,0 +1,17 @@
+node_modules
+dist
+coverage
+playwright-report
+test-results
+*.tsbuildinfo
+pathlight.config.json
+.tmp
+.env
+.env.*
+!.env.example
+!config/environments/*.env.example
+.pathlight
+reports
+runs
+.DS_Store
+.claude

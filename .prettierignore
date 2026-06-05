@@ -1,0 +1,11 @@
+Archive/
+Docs/
+node_modules/
+apps/web/dist/
+pathlight-app/
+pathlight-spike/
+playwright-report/
+test-results/
+.tmp/
+*.docx
+*.pdf

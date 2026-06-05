@@ -1,0 +1,72 @@
+{
+  "name": "@pathlight/workspace",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "predev": "npm run build:reporter",
+    "dev": "node --env-file-if-exists=.env --import tsx apps/server/src/index.ts",
+    "build:reporter": "esbuild packages/playwright-reporter/src/index.ts --bundle --platform=node --format=esm --outfile=packages/playwright-reporter/dist/bundled-reporter.js",
+    "build:cli": "esbuild packages/cli/src/cli.ts --bundle --platform=node --format=esm --outfile=packages/cli/dist/cli.js && esbuild packages/cli/src/index.ts --bundle --platform=node --format=esm --outfile=packages/cli/dist/index.js && chmod +x packages/cli/dist/cli.js",
+    "build": "npm run build:reporter && npm run build:cli && tsc -b && vite build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"apps/**/*.{ts,tsx}\" \"packages/**/*.{ts,tsx}\" \"e2e/**/*.ts\" \"*.config.ts\" --max-warnings=0",
+    "format": "prettier --write --ignore-unknown \"apps/**/*.{ts,tsx,css,html,json}\" \"packages/**/*.{ts,tsx,json}\" \"e2e/**/*.ts\" \"config/**/*.example\" \"README.md\" \".github/**/*.yml\" \".env.example\" \".gitignore\" \".prettierrc.json\" \"package*.json\" \"tsconfig.json\" \"*.config.ts\" \"eslint.config.js\"",
+    "format:check": "prettier --check --ignore-unknown \"apps/**/*.{ts,tsx,css,html,json}\" \"packages/**/*.{ts,tsx,json}\" \"e2e/**/*.ts\" \"config/**/*.example\" \"README.md\" \".github/**/*.yml\" \".env.example\" \".gitignore\" \".prettierrc.json\" \"package*.json\" \"tsconfig.json\" \"*.config.ts\" \"eslint.config.js\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm test && npm run build",
+    "prestart": "npm run build:reporter",
+    "start": "NODE_ENV=production node --env-file-if-exists=.env --import tsx apps/server/src/index.ts",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
+    "csv-parse": "^6.2.1",
+    "express": "^5.1.0",
+    "multer": "^2.1.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.54.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/express": "^5.0.3",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@types/supertest": "^6.0.3",
+    "@vitejs/plugin-react": "^4.6.0",
+    "esbuild": "^0.25.12",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^10.0.0",
+    "globals": "^16.0.0",
+    "husky": "^9.0.0",
+    "jsdom": "^26.1.0",
+    "lint-staged": "^16.0.0",
+    "prettier": "^3.0.0",
+    "supertest": "^7.1.4",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.0.0",
+    "vite": "^6.1.0",
+    "vitest": "^3.2.4"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs,cjs}": [
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml,css,html}": "prettier --write"
+  }
+}
